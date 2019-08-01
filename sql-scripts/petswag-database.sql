@@ -22,16 +22,16 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Table structure for table `photo`
+-- Table structure for table `post`
 --
 
-DROP TABLE IF EXISTS `photo`;
-CREATE TABLE `photo` (
+DROP TABLE IF EXISTS `post`;
+CREATE TABLE `post` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `image` varchar(255) NOT NULL,
   `caption` varchar(255) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
-  `create_time` timestamp NOT NULL,
+  `post_time` timestamp NOT NULL,
   
   PRIMARY KEY (`id`),
 
@@ -43,14 +43,14 @@ CREATE TABLE `photo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Table structure for table `photo_like`
+-- Table structure for table `post_like`
 --
 
-DROP TABLE IF EXISTS `photo_like`;
-CREATE TABLE `photo_like` (
+DROP TABLE IF EXISTS `post_like`;
+CREATE TABLE `post_like` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `photo_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
   `like_time` timestamp NOT NULL,
   
   PRIMARY KEY (`id`),
@@ -59,8 +59,8 @@ CREATE TABLE `photo_like` (
   REFERENCES `user` (`id`) 
   ON DELETE NO ACTION ON UPDATE NO ACTION,
   
-  CONSTRAINT `FK_PHOTO_L` FOREIGN KEY (`photo_id`) 
-  REFERENCES `photo` (`id`) 
+  CONSTRAINT `FK_POST_L` FOREIGN KEY (`post_id`) 
+  REFERENCES `post` (`id`) 
   ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -72,7 +72,7 @@ DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `photo_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
   `text` varchar(255) NOT NULL,
   `comment_time` timestamp NOT NULL,
   
@@ -82,7 +82,29 @@ CREATE TABLE `comment` (
   REFERENCES `user` (`id`) 
   ON DELETE NO ACTION ON UPDATE NO ACTION,
   
-  CONSTRAINT `FK_PHOTO_C` FOREIGN KEY (`photo_id`) 
-  REFERENCES `photo` (`id`) 
+  CONSTRAINT `FK_POST_C` FOREIGN KEY (`post_id`) 
+  REFERENCES `post` (`id`) 
+  ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `follow`
+--
+
+DROP TABLE IF EXISTS `follow`;
+CREATE TABLE `follow` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `follower_id` int(11) NOT NULL,
+  `followed_id` int(11) NOT NULL,
+  `follow_time` timestamp NOT NULL,
+  
+  PRIMARY KEY (`id`),
+  
+  CONSTRAINT `FK_USER_F_1` FOREIGN KEY (`follower_id`) 
+  REFERENCES `user` (`id`) 
+  ON DELETE NO ACTION ON UPDATE NO ACTION,
+  
+  CONSTRAINT `FK_USER_F_2` FOREIGN KEY (`followed_id`) 
+  REFERENCES `user` (`id`) 
   ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
