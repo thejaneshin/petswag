@@ -16,7 +16,6 @@ CREATE TABLE `user` (
   `name` varchar(45) NOT NULL,
   `bio` varchar(255) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
-  `enabled` tinyint(1) NOT NULL,
 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

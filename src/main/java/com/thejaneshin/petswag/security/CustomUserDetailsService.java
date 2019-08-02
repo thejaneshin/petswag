@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thejaneshin.petswag.exception.ResourceNotFoundException;
 import com.thejaneshin.petswag.model.User;
 import com.thejaneshin.petswag.service.UserService;
 
@@ -17,10 +18,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 	
 	@Override
 	@Transactional
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userService.findByUsername(username)
+	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+		User user = userService.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
 				.orElseThrow(() ->
-                	new UsernameNotFoundException("User not found with username : " + username));
+                	new UsernameNotFoundException("User not found with username : " + usernameOrEmail));
 		
 		return UserPrincipal.create(user);
 	}
@@ -29,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserById(int id) {
         User user = userService.findById(id)
         		.orElseThrow(() -> 
-        			new UsernameNotFoundException("User not found with username : " + id));
+        			new ResourceNotFoundException("User", "id", id));
 
         return UserPrincipal.create(user);
     }

@@ -41,9 +41,6 @@ public class User {
 	@Column(name="avatar")
 	private String avatar;
 	
-	@Column(name="enabled")
-	private int enabled;
-	
 	@OneToMany(mappedBy="user",
 			fetch=FetchType.LAZY,
 			cascade=CascadeType.ALL)
@@ -77,6 +74,17 @@ public class User {
 	inverseJoinColumns=@JoinColumn(name="role_id"))
 	private Set<Role> roles;
 	
+	public User() {
+		
+	}
+	
+	public User(String username, String password, String email, String name) {
+		this.username = username;
+		this.password = password;
+		this.email = email;
+		this.name = name;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -131,14 +139,6 @@ public class User {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
-	}
-
-	public int getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(int enabled) {
-		this.enabled = enabled;
 	}
 
 	public Set<Post> getPosts() {
