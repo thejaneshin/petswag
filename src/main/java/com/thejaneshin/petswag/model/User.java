@@ -14,6 +14,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="user")
@@ -23,21 +25,31 @@ public class User {
 	@Column(name="id")
 	private int id;
 	
+	@NotBlank
+	@Size(max=50)
 	@Column(name="username")
 	private String username;
 	
+	@NotBlank
+	@Size(max=68)
 	@Column(name="password")
 	private String password;
 	
+	@NotBlank
+	@Size(max=50)
 	@Column(name="email")
 	private String email;
 	
+	@NotBlank
+	@Size(max=45)
 	@Column(name="name")
 	private String name;
 	
+	@Size(max=255)
 	@Column(name="bio")
 	private String bio;
 	
+	@Size(max=255)
 	@Column(name="avatar")
 	private String avatar;
 	

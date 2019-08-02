@@ -11,7 +11,7 @@ public interface UserService {
 	
 	public Optional<User> findById(int userId);
 	
-	public User saveUser(User user);
+	public User save(User user);
 	
 	public boolean existsByUsername(String username);
 	

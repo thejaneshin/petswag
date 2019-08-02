@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -22,6 +24,8 @@ public class Comment {
 	@Column(name="id")
 	private int id;
 	
+	@NotBlank
+	@Size(max=255)
 	@Column(name="text")
 	private String text;
 	

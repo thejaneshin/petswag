@@ -81,7 +81,7 @@ public class AuthController {
         
         user.setRoles(Collections.singleton(userRole));
         
-        User theUser = userService.saveUser(user);
+        User theUser = userService.save(user);
         
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")

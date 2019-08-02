@@ -14,6 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -25,12 +28,16 @@ public class Post {
 	@Column(name="id")
 	private int id;
 	
+	@NotBlank
+	@Size(max=255)
 	@Column(name="image")
 	private String image;
 	
+	@Size(max=50)
 	@Column(name="caption")
 	private String caption;
 	
+	@NotNull
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@Column(name="create_time")
 	private LocalDateTime createTime;
