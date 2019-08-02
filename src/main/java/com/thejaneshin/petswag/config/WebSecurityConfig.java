@@ -1,21 +1,38 @@
 package com.thejaneshin.petswag.config;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.thejaneshin.petswag.security.CustomUserDetailsService;
+import com.thejaneshin.petswag.security.JwtAuthenticationEntryPoint;
+import com.thejaneshin.petswag.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(
+		securedEnabled = true,
+		jsr250Enabled = true,
+		prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
-	DataSource dataSource;
+    CustomUserDetailsService customUserDetailsService;
+	
+	@Autowired
+    private JwtAuthenticationEntryPoint unauthorizedHandler;
+	
+	@Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -25,26 +42,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication()
-			.usersByUsernameQuery("SELECT username, password, enabled FROM user WHERE username=?")
-			.authoritiesByUsernameQuery("SELECT username, \"ROLE_USER\" AS role FROM user WHERE username=?")
-			.dataSource(dataSource).passwordEncoder(passwordEncoder());
+		auth.userDetailsService(customUserDetailsService)
+			.passwordEncoder(passwordEncoder());
 	}
 	
 	// Will add more after finishing controller classes
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
+		http.cors().and()
+			.csrf()
+				.disable()
+			.exceptionHandling()
+				.authenticationEntryPoint(unauthorizedHandler).and()
+			.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.authorizeRequests()
-			.antMatchers("/").hasRole("USER")
-			.anyRequest().authenticated()
-			.and()
-			.formLogin()
-				.loginProcessingUrl("/authenticateTheUser")
-				.permitAll()
-			.and()
-			.logout().permitAll();
+			.antMatchers("/").permitAll()
+			.antMatchers("/api/auth/**").permitAll()
+			.anyRequest().authenticated();
 		
+		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 }
