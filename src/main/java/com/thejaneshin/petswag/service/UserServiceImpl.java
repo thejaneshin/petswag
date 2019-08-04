@@ -1,6 +1,6 @@
 package com.thejaneshin.petswag.service;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,20 +18,30 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<User> findByUsernameOrEmail(String username, String email) {
+	public User findByUsernameOrEmail(String username, String email) {
 		return userRepository.findByUsernameOrEmail(username, email);
 	}
 	
 	@Override
-	public Optional<User> findByUsername(String username) {
+	public User findByUsername(String username) {
 		return userRepository.findByUsername(username);
 	}
 
 	@Override
-	public Optional<User> findById(int userId) {
+	public User findById(int userId) {
 		return userRepository.findById(userId);
 	}
 
+	@Override
+	public List<User> getUserFollowers(String username) {
+		return userRepository.getUserFollowers(username);
+	}
+	
+	@Override
+	public List<User> getUserFollowing(String username) {
+		return userRepository.getUserFollowing(username);
+	}
+	
 	@Override
 	public User save(User user) {
 		return userRepository.save(user);

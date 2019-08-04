@@ -17,6 +17,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name="user")
 public class User {
@@ -56,6 +59,7 @@ public class User {
 	@OneToMany(mappedBy="user",
 			fetch=FetchType.LAZY,
 			cascade=CascadeType.ALL)
+	@JsonManagedReference
 	private Set<Post> posts;
 	
 	@OneToMany(mappedBy="user",
@@ -68,12 +72,14 @@ public class User {
 			cascade=CascadeType.ALL)
 	private Set<Comment> comments;
 	
+	@JsonIgnoreProperties({"password", "email", "bio", "posts", "likes", "comments", "followingList", "followerList", "roles"})
 	@ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name="follow", 
 			joinColumns=@JoinColumn(name="follower_id"), 
 			inverseJoinColumns=@JoinColumn(name="followed_id"))
-	private Set<User> followsList;
+	private Set<User> followingList;
 	
+	@JsonIgnoreProperties({"password", "email", "bio", "posts", "likes", "comments", "followingList", "followerList", "roles"})
 	@ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name="follow", 
 			joinColumns=@JoinColumn(name="followed_id"), 
@@ -177,12 +183,12 @@ public class User {
 		this.comments = comments;
 	}
 
-	public Set<User> getFollowsList() {
-		return followsList;
+	public Set<User> getFollowingList() {
+		return followingList;
 	}
 
-	public void setFollowsList(Set<User> followsList) {
-		this.followsList = followsList;
+	public void setFollowingList(Set<User> followsList) {
+		this.followingList = followsList;
 	}
 
 	public Set<User> getFollowerList() {

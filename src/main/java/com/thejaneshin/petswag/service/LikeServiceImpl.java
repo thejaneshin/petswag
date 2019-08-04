@@ -29,6 +29,11 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	public List<Like> findByUsername(String username) {
+		return likeRepository.findByUsername(username);
+	}
+	
+	@Override
 	public List<Like> findByPostId(int postId) {
 		return likeRepository.findByPostId(postId);
 	}

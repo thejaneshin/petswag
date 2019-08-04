@@ -18,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -39,11 +40,12 @@ public class Post {
 	
 	@NotNull
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	@Column(name="create_time")
-	private LocalDateTime createTime;
-	
-	@ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+	@Column(name="post_time")
+	private LocalDateTime postTime;
+
+	@ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
 	@JoinColumn(name="user_id")
+	@JsonBackReference
 	private User user;
 	
 	@OneToMany(mappedBy="post",
@@ -80,12 +82,12 @@ public class Post {
 		this.caption = caption;
 	}
 
-	public LocalDateTime getCreateTime() {
-		return createTime;
+	public LocalDateTime getPostTime() {
+		return postTime;
 	}
 
-	public void setCreateTime(LocalDateTime createTime) {
-		this.createTime = createTime;
+	public void setPostTime(LocalDateTime postTime) {
+		this.postTime = postTime;
 	}
 
 	public User getUser() {

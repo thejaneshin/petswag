@@ -10,6 +10,8 @@ public interface LikeService {
 
 	public List<Like> findByUserId(int userId);
 	
+	public List<Like> findByUsername(String username);
+	
 	public List<Like> findByPostId(int postId);
 	
 	public Like save(Like like);
