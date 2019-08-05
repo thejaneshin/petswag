@@ -64,7 +64,7 @@ CREATE TABLE `post` (
   `image` varchar(255) NOT NULL,
   `caption` varchar(255) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
-  `post_time` datetime NOT NULL,
+  `post_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   
   PRIMARY KEY (`id`),
 
@@ -84,7 +84,7 @@ CREATE TABLE `post_like` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
-  `like_time` datetime NOT NULL,
+  `like_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   
   PRIMARY KEY (`id`),
   
@@ -107,7 +107,7 @@ CREATE TABLE `comment` (
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
   `text` varchar(255) NOT NULL,
-  `comment_time` datetime NOT NULL,
+  `comment_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   
   PRIMARY KEY (`id`),
   
@@ -129,7 +129,7 @@ CREATE TABLE `follow` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `follower_id` int(11) NOT NULL,
   `followed_id` int(11) NOT NULL,
-  `follow_time` datetime NOT NULL,
+  `follow_time` timestamp DEFAULT CURRENT_TIMESTAMP,
   
   PRIMARY KEY (`id`),
   

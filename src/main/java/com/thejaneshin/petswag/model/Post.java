@@ -15,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -38,7 +37,6 @@ public class Post {
 	@Column(name="caption")
 	private String caption;
 	
-	@NotNull
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@Column(name="post_time")
 	private LocalDateTime postTime;
@@ -57,6 +55,17 @@ public class Post {
 			fetch=FetchType.LAZY,
 			cascade=CascadeType.ALL)
 	private Set<Comment> comments;
+	
+	public Post() {
+		
+	}
+	
+	public Post(String image, String caption, LocalDateTime postTime, User user) {
+		this.image = image;
+		this.caption = caption;
+		this.postTime = postTime;
+		this.user = user;
+	}
 
 	public int getId() {
 		return id;

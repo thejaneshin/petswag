@@ -3,6 +3,7 @@ package com.thejaneshin.petswag.service;
 import java.util.List;
 
 import com.thejaneshin.petswag.model.User;
+import com.thejaneshin.petswag.payload.UserSummary;
 
 public interface UserService {
 	public User findByUsername(String username);
@@ -11,11 +12,15 @@ public interface UserService {
 	
 	public User findById(int userId);
 	
-	public List<User> getUserFollowers(String username);
+	public List<UserSummary> getUserFollowers(String username);
 	
-	public List<User> getUserFollowing(String username);
+	public List<UserSummary> getUserFollowing(String username);
 	
 	public User save(User user);
+	
+	public int countFollowing(String username);
+	
+	public int countFollowers(String username);
 	
 	public boolean existsByUsername(String username);
 	

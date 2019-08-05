@@ -1,12 +1,11 @@
 package com.thejaneshin.petswag.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.thejaneshin.petswag.model.Like;
 
 public interface LikeService {
-	public Optional<Like> findById(int likeId);
+	public Like findById(int likeId);
 
 	public List<Like> findByUserId(int userId);
 	

@@ -1,7 +1,6 @@
 package com.thejaneshin.petswag.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class LikeServiceImpl implements LikeService {
 	}
 	
 	@Override
-	public Optional<Like> findById(int likeId) {
+	public Like findById(int likeId) {
 		return likeRepository.findById(likeId);
 	}
 

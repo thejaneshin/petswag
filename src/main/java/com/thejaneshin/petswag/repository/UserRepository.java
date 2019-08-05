@@ -14,10 +14,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	
 	public User findById(int userId);
 	
-	@Query("Select u.followerList FROM User u WHERE u.username=:username ORDER BY u.username ASC")
+	@Query("SELECT u.followerList FROM User u WHERE u.username=:username ORDER BY u.username ASC")
 	public List<User> getUserFollowers(String username);
 	
-	@Query("Select u.followingList FROM User u WHERE u.username=:username ORDER BY u.username ASC")
+	@Query("SELECT u.followingList FROM User u WHERE u.username=:username ORDER BY u.username ASC")
 	public List<User> getUserFollowing(String username);
 	
 	public boolean existsByUsername(String username);

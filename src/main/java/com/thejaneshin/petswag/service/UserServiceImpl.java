@@ -1,11 +1,13 @@
 package com.thejaneshin.petswag.service;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.thejaneshin.petswag.model.User;
+import com.thejaneshin.petswag.payload.UserSummary;
 import com.thejaneshin.petswag.repository.UserRepository;
 
 @Service
@@ -33,13 +35,31 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getUserFollowers(String username) {
-		return userRepository.getUserFollowers(username);
+	public List<UserSummary> getUserFollowers(String username) {
+		List<User> followers = userRepository.getUserFollowers(username);
+		
+		List<UserSummary> followerSummaries = new LinkedList<>(); 
+		
+		for (User f : followers) {
+			followerSummaries.add(new UserSummary(f.getId(), f.getUsername(), 
+				f.getAvatar()));
+		}
+		
+		return followerSummaries;
 	}
 	
 	@Override
-	public List<User> getUserFollowing(String username) {
-		return userRepository.getUserFollowing(username);
+	public List<UserSummary> getUserFollowing(String username) {
+		List<User> following = userRepository.getUserFollowing(username);
+		
+		List<UserSummary> followingSummaries = new LinkedList<>(); 
+		
+		for (User f : following) {
+			followingSummaries.add(new UserSummary(f.getId(), f.getUsername(), 
+				f.getAvatar()));
+		}
+		
+		return followingSummaries;
 	}
 	
 	@Override
@@ -47,6 +67,16 @@ public class UserServiceImpl implements UserService {
 		return userRepository.save(user);
 	}
 
+	@Override
+	public int countFollowing(String username) {
+		return getUserFollowing(username).size();
+	}
+	
+	@Override
+	public int countFollowers(String username) {
+		return getUserFollowers(username).size();
+	}
+	
 	@Override
 	public boolean existsByUsername(String username) {
 		return userRepository.existsByUsername(username);
