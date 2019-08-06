@@ -16,6 +16,9 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
 	@Query("SELECT l FROM Like l WHERE l.user.username=:username")
 	public List<Like> findByUsername(String username);
 	
-	@Query("SELECT l FROM Like l WHERE l.post.id=:postId")
+	@Query("SELECT l FROM Like l WHERE l.post.id=:postId ORDER BY l.likeTime DESC")
 	public List<Like> findByPostId(int postId);
+	
+	@Query("SELECT l FROM Like l WHERE l.post.id=:postId AND l.user.username=:username")
+	public Like findByPostIdAndUsername(int postId, String username);
 }

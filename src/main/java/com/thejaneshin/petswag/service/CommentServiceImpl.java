@@ -1,5 +1,6 @@
 package com.thejaneshin.petswag.service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.thejaneshin.petswag.model.Comment;
+import com.thejaneshin.petswag.model.User;
+import com.thejaneshin.petswag.payload.CommentResponse;
+import com.thejaneshin.petswag.payload.UserSummary;
 import com.thejaneshin.petswag.repository.CommentRepository;
-import com.thejaneshin.petswag.service.CommentService;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -30,8 +33,17 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public List<Comment> findByPostId(int postId) {
-		return commentRepository.findByPostId(postId);
+	public List<CommentResponse> findByPostId(int postId) {
+		List<Comment> comments = commentRepository.findByPostId(postId);
+		List<CommentResponse> commentResponses = new LinkedList<>();
+		
+		for (Comment c : comments) {
+			User user = c.getUser(); 
+			UserSummary commentedBy = new UserSummary(user.getId(), user.getUsername(), user.getAvatar());
+			commentResponses.add(new CommentResponse(c.getId(), c.getText(), commentedBy, c.getCommentTime()));
+		}
+		
+		return commentResponses;
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -22,8 +21,7 @@ public class Like {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
 	private int id;
-	
-	@NotNull
+
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@Column(name="like_time")
 	private LocalDateTime likeTime;
@@ -36,6 +34,15 @@ public class Like {
 	@JoinColumn(name="post_id")
 	private Post post;
 
+	public Like() {
+		
+	}
+	
+	public Like(User user, Post post) {
+		this.user = user;
+		this.post = post;
+	}
+	
 	public int getId() {
 		return id;
 	}

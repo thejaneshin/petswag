@@ -3,6 +3,7 @@ package com.thejaneshin.petswag.service;
 import java.util.List;
 
 import com.thejaneshin.petswag.model.Like;
+import com.thejaneshin.petswag.payload.LikeResponse;
 
 public interface LikeService {
 	public Like findById(int likeId);
@@ -11,7 +12,9 @@ public interface LikeService {
 	
 	public List<Like> findByUsername(String username);
 	
-	public List<Like> findByPostId(int postId);
+	public List<LikeResponse> findByPostId(int postId);
+	
+	public Like findByPostIdAndUsername(int postId, String username);
 	
 	public Like save(Like like);
 	

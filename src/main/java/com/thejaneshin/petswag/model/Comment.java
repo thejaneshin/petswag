@@ -41,6 +41,19 @@ public class Comment {
 	@JoinColumn(name="post_id")
 	private Post post;
 
+	public Comment() {
+		
+	}
+	
+	public Comment(String text, LocalDateTime commentTime, User user, Post post) {
+		this.text = text;
+		this.commentTime = commentTime;
+		this.user = user;
+		this.post = post;
+	}
+
+
+
 	public int getId() {
 		return id;
 	}

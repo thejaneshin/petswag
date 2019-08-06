@@ -29,8 +29,8 @@ public class PostServiceImpl implements PostService {
 		List<PostResponse> postResponses = new LinkedList<>();
 		
 		for (Post p : posts) {
-			User user = userRepository.findByUsername(p.getUser().getUsername());
-			UserSummary createdBy = new UserSummary(user.getId(), user.getUsername(), user.getName());
+			User user = p.getUser();
+			UserSummary createdBy = new UserSummary(user.getId(), user.getUsername(), user.getAvatar());
 			postResponses.add(new PostResponse(p.getId(), p.getImage(), p.getCaption(), 
 					createdBy, p.getPostTime(), p.getLikes().size(), p.getComments().size()));
 		}

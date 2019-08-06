@@ -18,14 +18,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.thejaneshin.petswag.exception.ResourceNotFoundException;
+import com.thejaneshin.petswag.model.Comment;
+import com.thejaneshin.petswag.model.Like;
 import com.thejaneshin.petswag.model.Post;
 import com.thejaneshin.petswag.model.User;
+import com.thejaneshin.petswag.payload.ApiResponse;
+import com.thejaneshin.petswag.payload.CommentRequest;
+import com.thejaneshin.petswag.payload.CommentResponse;
 import com.thejaneshin.petswag.payload.EditCaptionRequest;
+import com.thejaneshin.petswag.payload.LikeResponse;
 import com.thejaneshin.petswag.payload.PostRequest;
 import com.thejaneshin.petswag.payload.PostResponse;
 import com.thejaneshin.petswag.payload.UserSummary;
 import com.thejaneshin.petswag.security.CurrentUser;
 import com.thejaneshin.petswag.security.UserPrincipal;
+import com.thejaneshin.petswag.service.CommentService;
+import com.thejaneshin.petswag.service.LikeService;
 import com.thejaneshin.petswag.service.PostService;
 import com.thejaneshin.petswag.service.UserService;
 
@@ -38,6 +47,12 @@ public class PostController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private LikeService likeService;
+	
+	@Autowired
+	private CommentService commentService;
+	
 	@GetMapping("/posts")
 	public List<PostResponse> getAllPosts() {
 		return postService.findAll();
@@ -45,10 +60,14 @@ public class PostController {
 	
 	@GetMapping("/posts/{postId}")
 	public PostResponse getPost(@PathVariable int postId) {
-		Post post = postService.findById(postId);	
+		Post post = postService.findById(postId);
+		
+		if (post == null)
+			throw new ResourceNotFoundException("Post", "postId", postId);
+		
 		User user = userService.findByUsername(post.getUser().getUsername());
 		
-		UserSummary createdBy = new UserSummary(user.getId(), user.getUsername(), user.getName());
+		UserSummary createdBy = new UserSummary(user.getId(), user.getUsername(), user.getAvatar());
 		
 		return new PostResponse(post.getId(), post.getImage(), post.getCaption(),
 				createdBy, post.getPostTime(), post.getLikes().size(), post.getComments().size());
@@ -112,4 +131,67 @@ public class PostController {
 		}
 		
 	}
+	
+	@GetMapping("/posts/{postId}/likes")
+	public List<LikeResponse> getPostLikes(@PathVariable int postId) {
+		Post post = postService.findById(postId);
+		
+		if (post == null)
+			throw new ResourceNotFoundException("Post", "postId", postId);
+		
+		return likeService.findByPostId(postId);
+	}
+	
+	@PostMapping("/posts/{postId}/like")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<?> likePost(@CurrentUser UserPrincipal currentUser, @PathVariable int postId) {
+		User me = userService.findByUsername(currentUser.getName());
+		Post post = postService.findById(postId);
+		
+		if (post == null)
+			return new ResponseEntity<>(new ApiResponse(false, "Post does not exist"),
+                    HttpStatus.NOT_FOUND);
+		
+		Like like = likeService.findByPostIdAndUsername(postId, me.getUsername());
+		
+		if (like != null) {
+			likeService.deleteById(like.getId());
+			return new ResponseEntity<>("Unliked post", HttpStatus.OK);
+		}
+		else {
+			like = new Like(me, post);
+			like.setLikeTime(LocalDateTime.now());
+			likeService.save(like);
+			return new ResponseEntity<>("Liked post", HttpStatus.OK);
+		}
+
+	}
+	
+	@GetMapping("/posts/{postId}/comments")
+	public List<CommentResponse> getPostComments(@PathVariable int postId) {
+		Post post = postService.findById(postId);
+		
+		if (post == null)
+			throw new ResourceNotFoundException("Post", "postId", postId);
+		
+		return commentService.findByPostId(postId);
+	}
+	
+	@PostMapping("/posts/{postId}/comment")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<?> commentPost(@CurrentUser UserPrincipal currentUser, @PathVariable int postId,
+			@Valid @RequestBody CommentRequest commentRequest) {
+		User me = userService.findByUsername(currentUser.getName());
+		Post post = postService.findById(postId);
+		
+		if (post == null)
+			return new ResponseEntity<>(new ApiResponse(false, "Post does not exist"),
+                    HttpStatus.NOT_FOUND);
+		
+		Comment comment = new Comment(commentRequest.getText(), LocalDateTime.now(), me, post);
+		commentService.save(comment);
+		
+		return new ResponseEntity<>("Added comment", HttpStatus.OK);
+	}
+	
 }
