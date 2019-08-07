@@ -1,7 +1,5 @@
 package com.thejaneshin.petswag.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thejaneshin.petswag.exception.ResourceNotFoundException;
@@ -22,6 +21,7 @@ import com.thejaneshin.petswag.model.User;
 import com.thejaneshin.petswag.payload.ApiResponse;
 import com.thejaneshin.petswag.payload.ChangePasswordRequest;
 import com.thejaneshin.petswag.payload.EditProfileRequest;
+import com.thejaneshin.petswag.payload.PagedResponse;
 import com.thejaneshin.petswag.payload.PostResponse;
 import com.thejaneshin.petswag.payload.UserProfile;
 import com.thejaneshin.petswag.payload.UserSummary;
@@ -109,35 +109,29 @@ public class UserController {
 	}
 	
 	@GetMapping("/users/{username}/posts")
-	public List<PostResponse> getUserPosts(@PathVariable(value="username") String username) {
-		User user = userService.findByUsername(username);
+	public PagedResponse<PostResponse> getUserPosts(@PathVariable(value="username") String username,
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="size", defaultValue="5") int size) {
 		
-		if (user == null)
-			throw new ResourceNotFoundException("User", "username", username);
-		
-		return postService.findByUsername(username);
+		return postService.findByUsernamePage(username, page, size);
 	}
 	
 	@GetMapping("/users/{username}/followers")
 	@PreAuthorize("hasRole('USER')")
-	public List<UserSummary> getUserFollowers(@PathVariable(value="username") String username) {
-		User user = userService.findByUsername(username);
+	public PagedResponse<UserSummary> getUserFollowers(@PathVariable(value="username") String username,
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="size", defaultValue="10") int size) {	
 		
-		if (user == null)
-			throw new ResourceNotFoundException("User", "username", username);		
-		
-		return userService.getUserFollowers(username);
+		return userService.getUserFollowers(username, page, size);
 	}
 	
 	@GetMapping("/users/{username}/following")
 	@PreAuthorize("hasRole('USER')")
-	public List<UserSummary> getUserFollowing(@PathVariable(value="username") String username) {
-		User user = userService.findByUsername(username);
+	public PagedResponse<UserSummary> getUserFollowing(@PathVariable(value="username") String username,
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="size", defaultValue="10") int size) {
 		
-		if (user == null)
-			throw new ResourceNotFoundException("User", "username", username);		
-		
-		return userService.getUserFollowing(username);
+		return userService.getUserFollowing(username, page, size);
 	}
 	
 	@PostMapping("/users/{username}/follow")

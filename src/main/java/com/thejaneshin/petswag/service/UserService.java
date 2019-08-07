@@ -1,8 +1,7 @@
 package com.thejaneshin.petswag.service;
 
-import java.util.List;
-
 import com.thejaneshin.petswag.model.User;
+import com.thejaneshin.petswag.payload.PagedResponse;
 import com.thejaneshin.petswag.payload.UserSummary;
 
 public interface UserService {
@@ -12,9 +11,9 @@ public interface UserService {
 	
 	public User findById(int userId);
 	
-	public List<UserSummary> getUserFollowers(String username);
+	public PagedResponse<UserSummary> getUserFollowers(String username, int page, int size);
 	
-	public List<UserSummary> getUserFollowing(String username);
+	public PagedResponse<UserSummary> getUserFollowing(String username, int page, int size);
 	
 	public User save(User user);
 	

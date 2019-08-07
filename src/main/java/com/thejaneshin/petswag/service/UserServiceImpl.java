@@ -1,12 +1,19 @@
 package com.thejaneshin.petswag.service;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.thejaneshin.petswag.exception.BadRequestException;
+import com.thejaneshin.petswag.exception.ResourceNotFoundException;
 import com.thejaneshin.petswag.model.User;
+import com.thejaneshin.petswag.payload.PagedResponse;
 import com.thejaneshin.petswag.payload.UserSummary;
 import com.thejaneshin.petswag.repository.UserRepository;
 
@@ -34,9 +41,26 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findById(userId);
 	}
 
+	private void validatePageNumber(int page) {
+		if (page < 0)
+			throw new BadRequestException("Page number cannot be less than zero.");
+	}
+	
 	@Override
-	public List<UserSummary> getUserFollowers(String username) {
-		List<User> followers = userRepository.getUserFollowers(username);
+	public PagedResponse<UserSummary> getUserFollowers(String username, int page, int size) {
+		validatePageNumber(page);
+		
+		User user = userRepository.findByUsername(username);
+		
+		if (user == null)
+			throw new ResourceNotFoundException("User", "username", username);
+		
+		Pageable pageable = PageRequest.of(page, size);
+		Page<User> followers = userRepository.getUserFollowersPage(username, pageable);
+		
+		if (followers.getNumberOfElements() == 0)
+			return new PagedResponse<>(Collections.emptyList(), followers.getNumber(),
+                    followers.getSize(), followers.getTotalElements(), followers.getTotalPages(), followers.isLast());
 		
 		List<UserSummary> followerSummaries = new LinkedList<>(); 
 		
@@ -45,12 +69,25 @@ public class UserServiceImpl implements UserService {
 				f.getAvatar()));
 		}
 		
-		return followerSummaries;
+		return new PagedResponse<>(followerSummaries, followers.getNumber(), 
+				followers.getSize(), followers.getTotalElements(), followers.getTotalPages(), followers.isLast());
 	}
 	
 	@Override
-	public List<UserSummary> getUserFollowing(String username) {
-		List<User> following = userRepository.getUserFollowing(username);
+	public PagedResponse<UserSummary> getUserFollowing(String username, int page, int size) {
+		validatePageNumber(page);
+		
+		User user = userRepository.findByUsername(username);
+		
+		if (user == null)
+			throw new ResourceNotFoundException("User", "username", username);
+		
+		Pageable pageable = PageRequest.of(page, size);
+		Page<User> following = userRepository.getUserFollowingPage(username, pageable);
+		
+		if (following.getNumberOfElements() == 0)
+			return new PagedResponse<>(Collections.emptyList(), following.getNumber(),
+					following.getSize(), following.getTotalElements(), following.getTotalPages(), following.isLast());
 		
 		List<UserSummary> followingSummaries = new LinkedList<>(); 
 		
@@ -59,7 +96,8 @@ public class UserServiceImpl implements UserService {
 				f.getAvatar()));
 		}
 		
-		return followingSummaries;
+		return new PagedResponse<>(followingSummaries, following.getNumber(), 
+				following.getSize(), following.getTotalElements(), following.getTotalPages(), following.isLast());	
 	}
 	
 	@Override
@@ -68,13 +106,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public int countFollowing(String username) {
-		return getUserFollowing(username).size();
+	public int countFollowers(String username) {	
+		return userRepository.getUserFollowers(username).size();
 	}
 	
 	@Override
-	public int countFollowers(String username) {
-		return getUserFollowers(username).size();
+	public int countFollowing(String username) {	
+		return userRepository.getUserFollowing(username).size();
 	}
 	
 	@Override

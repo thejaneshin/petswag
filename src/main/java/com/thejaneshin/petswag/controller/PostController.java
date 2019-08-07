@@ -1,7 +1,6 @@
 package com.thejaneshin.petswag.controller;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thejaneshin.petswag.exception.ResourceNotFoundException;
@@ -28,6 +28,7 @@ import com.thejaneshin.petswag.payload.CommentRequest;
 import com.thejaneshin.petswag.payload.CommentResponse;
 import com.thejaneshin.petswag.payload.EditCaptionRequest;
 import com.thejaneshin.petswag.payload.LikeResponse;
+import com.thejaneshin.petswag.payload.PagedResponse;
 import com.thejaneshin.petswag.payload.PostRequest;
 import com.thejaneshin.petswag.payload.PostResponse;
 import com.thejaneshin.petswag.payload.UserSummary;
@@ -53,11 +54,6 @@ public class PostController {
 	@Autowired
 	private CommentService commentService;
 	
-	@GetMapping("/posts")
-	public List<PostResponse> getAllPosts() {
-		return postService.findAll();
-	}
-	
 	@GetMapping("/posts/{postId}")
 	public PostResponse getPost(@PathVariable int postId) {
 		Post post = postService.findById(postId);
@@ -75,8 +71,11 @@ public class PostController {
 	
 	@GetMapping("/dashboard")
 	@PreAuthorize("hasRole('USER')")
-	public List<PostResponse> getFollowingPosts(@CurrentUser UserPrincipal currentUser) {
-		return postService.findFollowingPosts(currentUser.getUsername());
+	public PagedResponse<PostResponse> getFollowingPosts(@CurrentUser UserPrincipal currentUser,
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="size", defaultValue="5") int size) {
+		
+		return postService.findFollowingPosts(currentUser.getUsername(), page, size);
 	}
 	
 	@PostMapping("/posts")
@@ -109,8 +108,7 @@ public class PostController {
 		}
 		else {
 			return new ResponseEntity<>("Unable to edit post", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-			
+		}		
 	}
 	
 	@DeleteMapping("/posts/{postId}")
@@ -129,20 +127,17 @@ public class PostController {
 		else {
 			return new ResponseEntity<>("Unable to delete post", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
 	}
 	
 	@GetMapping("/posts/{postId}/likes")
-	public List<LikeResponse> getPostLikes(@PathVariable int postId) {
-		Post post = postService.findById(postId);
+	public PagedResponse<LikeResponse> getPostLikes(@PathVariable int postId,
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="size", defaultValue="10") int size) {
 		
-		if (post == null)
-			throw new ResourceNotFoundException("Post", "postId", postId);
-		
-		return likeService.findByPostId(postId);
+		return likeService.findByPostId(postId, page, size);
 	}
 	
-	@PostMapping("/posts/{postId}/like")
+	@PostMapping("/posts/{postId}/likes")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> likePost(@CurrentUser UserPrincipal currentUser, @PathVariable int postId) {
 		User me = userService.findByUsername(currentUser.getName());
@@ -168,16 +163,14 @@ public class PostController {
 	}
 	
 	@GetMapping("/posts/{postId}/comments")
-	public List<CommentResponse> getPostComments(@PathVariable int postId) {
-		Post post = postService.findById(postId);
+	public PagedResponse<CommentResponse> getPostComments(@PathVariable int postId,
+			@RequestParam(value="page", defaultValue="0") int page,
+			@RequestParam(value="size", defaultValue="5") int size) {
 		
-		if (post == null)
-			throw new ResourceNotFoundException("Post", "postId", postId);
-		
-		return commentService.findByPostId(postId);
+		return commentService.findByPostId(postId, page, size);
 	}
 	
-	@PostMapping("/posts/{postId}/comment")
+	@PostMapping("/posts/{postId}/comments")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> commentPost(@CurrentUser UserPrincipal currentUser, @PathVariable int postId,
 			@Valid @RequestBody CommentRequest commentRequest) {

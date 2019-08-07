@@ -1,18 +1,13 @@
 package com.thejaneshin.petswag.service;
 
-import java.util.List;
-
 import com.thejaneshin.petswag.model.Like;
 import com.thejaneshin.petswag.payload.LikeResponse;
+import com.thejaneshin.petswag.payload.PagedResponse;
 
 public interface LikeService {
 	public Like findById(int likeId);
-
-	public List<Like> findByUserId(int userId);
 	
-	public List<Like> findByUsername(String username);
-	
-	public List<LikeResponse> findByPostId(int postId);
+	public PagedResponse<LikeResponse> findByPostId(int postId, int page, int size);
 	
 	public Like findByPostIdAndUsername(int postId, String username);
 	

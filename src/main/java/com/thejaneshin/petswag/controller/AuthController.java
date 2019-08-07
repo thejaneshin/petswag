@@ -76,8 +76,10 @@ public class AuthController {
         User user = new User(signUpRequest.getUsername(), signUpRequest.getPassword(), signUpRequest.getEmail(), signUpRequest.getName());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         
-        Role userRole = roleService.findByName("ROLE_USER")
-        		.orElseThrow(() -> new AppException("User Role not set."));
+        Role userRole = roleService.findByName("ROLE_USER");
+        
+        if (userRole == null)
+        	throw new AppException("User Role not set.");
         
         user.setRoles(Collections.singleton(userRole));
         

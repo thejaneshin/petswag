@@ -1,17 +1,13 @@
 package com.thejaneshin.petswag.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.thejaneshin.petswag.model.Comment;
 import com.thejaneshin.petswag.payload.CommentResponse;
+import com.thejaneshin.petswag.payload.PagedResponse;
 
 public interface CommentService {
-	public Optional<Comment> findById(int commentId);
+	public Comment findById(int commentId);
 	
-	public List<Comment> findByUserId(int userId);
-	
-	public List<CommentResponse> findByPostId(int postId);
+	public PagedResponse<CommentResponse> findByPostId(int postId, int page, int size);
 	
 	public Comment save(Comment comment);
 	
