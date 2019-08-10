@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 
 class AppHeader extends Component {
@@ -8,7 +7,7 @@ class AppHeader extends Component {
 	}
 
 	render() {
-		const { currentUser } = this.props;
+		const { currentUser, isAuthenticated, onLogout } = this.props;
 
 		return(
 			<div>
@@ -17,23 +16,11 @@ class AppHeader extends Component {
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
   				<Navbar.Collapse id="responsive-navbar-nav" className="justify-content-end">
 					{
-						currentUser === null
+						isAuthenticated
 							? (
 									<Nav>
-										<Nav.Link href="/login">
-											Login
-										</Nav.Link>
-
-										<Nav.Link href="/signup">
-											Register
-										</Nav.Link>
-									</Nav>
-
-								)
-							: (
-									<Nav>
 										<Nav.Link href="/profile">
-											Placeholder Name
+											{currentUser.username}
 										</Nav.Link>
 
 										<Nav.Link href="/activity">
@@ -42,6 +29,22 @@ class AppHeader extends Component {
 										
 										<Nav.Link href="/post/new">
 											New Post
+										</Nav.Link>
+
+										<Nav.Link href="#" onSelect={onLogout}>
+											Log Out
+										</Nav.Link>
+									</Nav>
+
+								)
+							: (
+									<Nav>
+										<Nav.Link href="/login">
+											Login
+										</Nav.Link>
+
+										<Nav.Link href="/signup">
+											Register
 										</Nav.Link>
 									</Nav>
 								)

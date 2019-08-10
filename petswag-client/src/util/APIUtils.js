@@ -1,4 +1,4 @@
-import { API_BASE_URL, ACCESS_TOKEN } from '../constants';
+import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE } from '../constants';
 
 const request = (options) => {
 	const headers = new Headers({
@@ -46,6 +46,16 @@ export function getCurrentUser() {
 
 	return request({
 		url: API_BASE_URL +"/user/me",
+		method: 'GET'
+	});
+}
+
+export function getFollowingPosts(page, size) {
+	page = page || 0;
+	size = size || POST_LIST_SIZE;
+
+	return request({
+		url: API_BASE_URL + "/dashboard?page=" + page + "&size=" + size,
 		method: 'GET'
 	});
 }

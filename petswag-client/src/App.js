@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 import { getCurrentUser } from './util/APIUtils';
 import { ACCESS_TOKEN } from './constants';
 import AppHeader from './common/AppHeader';
 import Login from './user/Login/Login';
+import PostList from './post/PostList';
 import NotFound from './common/NotFound';
 import './App.css';
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       currentUser: null,
       isAuthenticated: false,
@@ -21,7 +22,7 @@ class App extends Component {
 
   loadCurrentUser = () => {
     this.setState({ isLoading: true });
-localStorage.removeItem(ACCESS_TOKEN);
+
     getCurrentUser()
       .then(response => {
         this.setState({
@@ -38,6 +39,10 @@ localStorage.removeItem(ACCESS_TOKEN);
 
   }
 
+  componentWillMount() {
+    this.loadCurrentUser();
+  }
+
   handleLogin = () => {
     this.loadCurrentUser();
     this.props.history.push("/");
@@ -45,7 +50,7 @@ localStorage.removeItem(ACCESS_TOKEN);
 
   handleLogout = (redirectTo="/") => {
     localStorage.removeItem(ACCESS_TOKEN);
-
+    
     this.setState({
       currentUser: null,
       isAuthenticated: false
@@ -54,45 +59,51 @@ localStorage.removeItem(ACCESS_TOKEN);
     this.props.history.push(redirectTo);
   }
 
-  componentWillMount() {
-    this.loadCurrentUser();
-  }
-
   render() {
     const { currentUser, isAuthenticated, isLoading } = this.state;
 
     return(
       <div>
-        <AppHeader isAuthenticated={isAuthenticated} 
-          currentUser={currentUser} 
-          onLogout={this.handleLogout} />
-
         {
           isLoading
             ? (
-                <div className="d-flex justify-content-center">
-                  <Spinner animation="border" />
-                </div>
+                null
               )
             :
               (
-                <Switch>
+                <div>
+                  <AppHeader isAuthenticated={isAuthenticated} 
+                    currentUser={currentUser} 
+                    onLogout={this.handleLogout} />
+                  <Switch>
+                    <Route exact path="/"
+                      render={(props) =>  (
+                        isAuthenticated
+                          ? (
+                              <PostList isAuthenticated={isAuthenticated} 
+                                currentUser={currentUser} handleLogout={this.handleLogout} {...props} />
+                            )
+                          : (
+                              <Redirect to="/login" />
+                            )
+                      )}>
+                    </Route>
+                     
+                    <Route path="/login"
+                      render={(props) => (
+                        isAuthenticated 
+                          ? (
+                              <Redirect to="/" />
+                            )
+                          : (
+                              <Login onLogin={this.handleLogin} {...props} />
+                            )
+                      )}>     
+                    </Route>
 
-                  <Route path="/login"
-                    render={(props) => (
-                      isAuthenticated 
-                        ? (
-                            <Redirect to="/" />
-                          )
-                        : (
-                            <Login onLogin={this.handleLogin} {...props} />
-                          )
-                    )}>     
-                  </Route>
-
-                  <Route component={NotFound}></Route>
-
-                </Switch> 
+                    <Route component={NotFound}></Route>
+                  </Switch> 
+                </div>
               )
 
         }

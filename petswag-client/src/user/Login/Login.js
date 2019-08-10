@@ -36,7 +36,6 @@ class Login extends Component {
 		login(loginRequest)
 			.then(response => {
 				localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-				console.log("wooo");
 				this.props.onLogin();
 			})
 			.catch(error => {
