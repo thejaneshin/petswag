@@ -74,7 +74,7 @@ public class PostController {
 	public PagedResponse<PostResponse> getFollowingPosts(@CurrentUser UserPrincipal currentUser,
 			@RequestParam(value="page", defaultValue="0") int page,
 			@RequestParam(value="size", defaultValue="5") int size) {
-		
+
 		return postService.findFollowingPosts(currentUser.getUsername(), page, size);
 	}
 	
