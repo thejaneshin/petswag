@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container, Button, Spinner } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 
 import Post from './Post';
 import { getFollowingPosts } from '../util/APIUtils';
-import { POST_LIST_SIZE} from '../constants';
+import { POST_LIST_SIZE } from '../constants';
+import './PostList.css';
 
 class PostList extends Component {
 	constructor(props) {
@@ -87,12 +88,14 @@ class PostList extends Component {
 
 	render() {
 		const postViews = [];
+		const { posts, isLoading, last } = this.state;
 
-		this.state.posts.forEach((post, postIndex) => {
+		posts.forEach((post, postIndex) => {
 			postViews.push(
 				<Post 
 					key={post.id}
 					post={post}
+					isAuthenticated={this.props.isAuthenticated} 
 				/>
 			)
 		});
@@ -100,7 +103,32 @@ class PostList extends Component {
 		return(
 			<Container>
 				{postViews}
+				{
+					!isLoading && posts.length === 0
+						? (
+								<div className="no-posts-found">
+									<span>No Posts Found.</span>
+								</div>
+							)
+						: null
+
+				}
+
+				{
+					!isLoading && !last
+						? (
+								<div className="load-more-posts">
+									<Button variant="outline-primary" onClick={this.handleLoadMore} disabled={isLoading}>
+										Load More 
+									</Button>
+								</div>
+							)
+						: null
+				}
+
 			</Container>
+
+
 		);
 	}
 }

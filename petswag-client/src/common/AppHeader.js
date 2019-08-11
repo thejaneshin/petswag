@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Navbar, Nav } from 'react-bootstrap';
+import { FaUser, FaBolt, FaPlus } from 'react-icons/fa';
 
 class AppHeader extends Component {
 	constructor(props) {
@@ -20,15 +21,15 @@ class AppHeader extends Component {
 							? (
 									<Nav>
 										<Nav.Link href="/profile">
-											{currentUser.username}
+											<FaUser />
 										</Nav.Link>
 
 										<Nav.Link href="/activity">
-											Activity
+											<FaBolt />
 										</Nav.Link>
 										
 										<Nav.Link href="/post/new">
-											New Post
+											<FaPlus />
 										</Nav.Link>
 
 										<Nav.Link href="#" onSelect={onLogout}>

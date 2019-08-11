@@ -184,7 +184,7 @@ public class PostController {
 		Comment comment = new Comment(commentRequest.getText(), LocalDateTime.now(), me, post);
 		commentService.save(comment);
 		
-		return new ResponseEntity<>("Added comment", HttpStatus.OK);
+		return ResponseEntity.ok(HttpStatus.OK);
 	}
 	
 }

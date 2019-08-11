@@ -1,4 +1,4 @@
-import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE } from '../constants';
+import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE, COMMENT_LIST_SIZE } from '../constants';
 
 const request = (options) => {
 	const headers = new Headers({
@@ -20,7 +20,10 @@ const request = (options) => {
         }
         return json;
     	})
-    );
+    )
+    .catch(error => {
+    	console.log("Something went wrong");
+    });
 };
 
 export function signup(signupRequest) {
@@ -57,5 +60,23 @@ export function getFollowingPosts(page, size) {
 	return request({
 		url: API_BASE_URL + "/dashboard?page=" + page + "&size=" + size,
 		method: 'GET'
+	});
+}
+
+export function getPostComments(postId, page, size) {
+	page = page || 0;
+	size = size || COMMENT_LIST_SIZE;
+
+	return request({
+		url: API_BASE_URL + "/posts/" + postId + "/comments?page=" + page + "&size=" + size,
+		method: 'GET'
+	});
+}
+
+export function addComment(postId, commentRequest) {
+	return request({
+		url: API_BASE_URL + "/posts/" + postId + "/comments",
+		method: 'POST',
+		body: JSON.stringify(commentRequest)
 	});
 }

@@ -1,3 +1,49 @@
 .post-content {
-	margin-bottom: 30px;
+	margin-bottom: 40px;
+	width: 450px;
+}
+
+.post-creator-avatar {
+	margin-left: 10px;
+	width: 40px;
+	height: 40px;
+	border-radius: 20%;
+}
+
+.post-creator-username {
+	margin-left: 10px;
+	font-weight: bold;
+	color: black;
+}
+
+.total-likes {
+	margin-top: 10px;
+}
+
+.caption-content {
+	margin-bottom: 10px;
+}
+
+.post-caption-username {
+	font-weight: bold;
+	color: black;
+}
+
+.post-caption {
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+.commenter-username {
+	font-weight: bold;
+	color: black;
+}
+
+.comment-text {
+	margin-left: 10px;
+}
+
+.comment-form {
+	margin-top: 20px;
+	margin-bottom: -30px;
 }
