@@ -63,6 +63,20 @@ export function getFollowingPosts(page, size) {
 	});
 }
 
+export function isLikedByMe(postId) {
+	return request({
+		url: API_BASE_URL + "/posts/" + postId + "/liked",
+		method: 'GET'
+	});
+}
+
+export function changeLike(postId) {
+	return request({
+		url: API_BASE_URL + "/posts/" + postId + "/likes",
+		method: 'POST'
+	});
+}
+
 export function getPostComments(postId, page, size) {
 	page = page || 0;
 	size = size || COMMENT_LIST_SIZE;

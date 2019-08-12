@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import { FaUser, FaBolt, FaPlus } from 'react-icons/fa';
 
 class AppHeader extends Component {
-	constructor(props) {
-		super(props);
-	}
-
 	render() {
-		const { currentUser, isAuthenticated, onLogout } = this.props;
+		const { isAuthenticated, onLogout } = this.props;
 
 		return(
 			<div>

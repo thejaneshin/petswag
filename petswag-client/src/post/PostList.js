@@ -17,23 +17,34 @@ class PostList extends Component {
 			totalElements: 0,
 			totalPages: 0, 
 			last: true,
+
+			commentLists: {},
 			isLoading: false
 		}
 	}
 
+	componentDidMount() {
+		this.loadPostList();
+	}
+
+	componentDidUpdate(nextProps) {
+		if (this.props.isAuthenticated !== nextProps.isAuthenticated) {
+			this.setState({
+				posts: [],
+				page: 0,
+				size: 5,
+				totalElements: 0,
+				totalPages: 0, 
+				last: true,
+				isLoading: false
+			});
+			this.loadPostList();
+
+		}
+	}
+
 	loadPostList = (page = 0, size = POST_LIST_SIZE) => {
-		let promise;
-		if (this.props.username) {
-
-
-		}
-		else {
-			promise = getFollowingPosts(page, size);
-		}
-
-		if (!promise) {
-			return;
-		}
+		let promise = getFollowingPosts(page, size);
 
 		this.setState({
 			isLoading: true
@@ -58,28 +69,6 @@ class PostList extends Component {
 					isLoading: false
 				})
 			});
-
-	}
-
-	componentDidMount() {
-		this.loadPostList();
-	}
-
-	componentDidUpdate(nextProps) {
-		if (this.props.isAuthenticated !== nextProps.isAuthenticated) {
-			// Reset state
-			this.setState({
-				posts: [],
-				page: 0,
-				size: 5,
-				totalElements: 0,
-				totalPages: 0, 
-				last: true,
-				isLoading: false
-			});
-			this.loadPostList();
-
-		}
 	}
 
 	handleLoadMore = () => {

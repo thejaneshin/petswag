@@ -16,8 +16,9 @@
 	color: black;
 }
 
-.total-likes {
-	margin-top: 10px;
+.like-btn {
+	margin-bottom: 5px;
+	cursor: pointer;
 }
 
 .caption-content {

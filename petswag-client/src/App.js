@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
-import { Container } from 'react-bootstrap';
 
 import { getCurrentUser } from './util/APIUtils';
 import { ACCESS_TOKEN } from './constants';
@@ -73,7 +72,6 @@ class App extends Component {
               (
                 <div>
                   <AppHeader isAuthenticated={isAuthenticated} 
-                    currentUser={currentUser} 
                     onLogout={this.handleLogout} />
                   <Switch>
                     <Route exact path="/"

@@ -137,6 +137,17 @@ public class PostController {
 		return likeService.findByPostId(postId, page, size);
 	}
 	
+	@GetMapping("/posts/{postId}/liked")
+	@PreAuthorize("hasRole('USER')")
+	public boolean isLikedByMe(@CurrentUser UserPrincipal currentUser, @PathVariable int postId) {
+		Like like = likeService.findByPostIdAndUsername(postId, currentUser.getUsername());
+		
+		if (like == null)
+			return false;
+		else
+			return true;
+	}
+	
 	@PostMapping("/posts/{postId}/likes")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> likePost(@CurrentUser UserPrincipal currentUser, @PathVariable int postId) {
@@ -151,15 +162,14 @@ public class PostController {
 		
 		if (like != null) {
 			likeService.deleteById(like.getId());
-			return new ResponseEntity<>("Unliked post", HttpStatus.OK);
 		}
 		else {
 			like = new Like(me, post);
 			like.setLikeTime(LocalDateTime.now());
 			likeService.save(like);
-			return new ResponseEntity<>("Liked post", HttpStatus.OK);
 		}
-
+		
+		return ResponseEntity.ok(HttpStatus.OK);
 	}
 	
 	@GetMapping("/posts/{postId}/comments")
