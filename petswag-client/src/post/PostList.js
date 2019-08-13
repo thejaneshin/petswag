@@ -17,7 +17,6 @@ class PostList extends Component {
 			totalElements: 0,
 			totalPages: 0, 
 			last: true,
-
 			commentLists: {},
 			isLoading: false
 		}
@@ -65,9 +64,8 @@ class PostList extends Component {
 				})
 			})
 			.catch(error => {
-				this.setState({
-					isLoading: false
-				})
+				console.log(error.message);
+				this.setState({isLoading: false});
 			});
 	}
 

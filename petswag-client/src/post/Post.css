@@ -8,6 +8,7 @@
 	width: 40px;
 	height: 40px;
 	border-radius: 20%;
+	border: 1px solid grey;
 }
 
 .post-creator-username {
@@ -16,13 +17,25 @@
 	color: black;
 }
 
+.like-info {
+	display: flex;
+	align-items: center;
+}
+
 .like-btn {
-	margin-bottom: 5px;
+	margin-left: 10px;
 	cursor: pointer;
 }
 
-.caption-content {
-	margin-bottom: 10px;
+.total-no-likes {
+	margin-left: 10px;
+	font-weight: bold;
+}
+
+.total-likes {
+	margin-left: 10px;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 .post-caption-username {
@@ -32,7 +45,6 @@
 
 .post-caption {
 	margin-left: 10px;
-	margin-bottom: 10px;
 }
 
 .commenter-username {

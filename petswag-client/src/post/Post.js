@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Card, Row, Form, InputGroup, Button } from 'react-bootstrap';
+import { Card, Row, Form, InputGroup, Button, Modal } from 'react-bootstrap';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 
 import { formatDateTime } from '../util/Helpers';
 import { getPostComments, isLikedByMe, changeLike, addComment } from '../util/APIUtils';
 import { COMMENT_LIST_SIZE } from '../constants';
+import LikeList from './LikeList';
 import './Post.css';
 
 class Post extends Component {
@@ -21,12 +22,13 @@ class Post extends Component {
 			last: true,
 			isLiked: false,
 			likeCount: this.props.post.likeCount,
-			comment: ''
+			comment: '',
+			showLikeList: false
 		}
 	}
 
 	componentDidMount() {
-		this.getLikeStatus();
+		this.loadLikeStatus();
 		this.loadCommentList();
 	}
 
@@ -53,7 +55,7 @@ class Post extends Component {
 		this.loadCommentList(this.state.page + 1);
 	}
 
-	getLikeStatus = () => {
+	loadLikeStatus = () => {
 		isLikedByMe(this.props.post.id)
 			.then(response => {
 				this.setState({isLiked: response})
@@ -91,6 +93,14 @@ class Post extends Component {
 					console.log(error.message);
 				}
 			})
+	}
+
+	handleShowLikes = () => {
+		this.setState({showLikeList: true})
+	}
+
+	handleCloseLikes = () => {
+		this.setState({showLikeList: false})
 	}
 
 	onCommentChange = (event) => {
@@ -174,28 +184,45 @@ class Post extends Component {
 					alt=""/>
 
 				<Card.Footer>
-					<IconContext.Provider value={{ color: "red", size: "2em" }}>
-						<div className="like-btn" onClick={this.handleLikeChange}>
-							{
-								isLiked
-									? <FaHeart />
-									: <FaRegHeart />
-							}
-						</div>
-					</IconContext.Provider>
+					<Row className="like-info">
+						<IconContext.Provider value={{ color: "red", size: "2em" }}>
+							<div className="like-btn" onClick={this.handleLikeChange}>
+								{
+									isLiked
+										? <FaHeart />
+										: <FaRegHeart />
+								}
+							</div>
+						</IconContext.Provider>
 
-					{/*Need to implement view all likes link*/}
-					<a href="#" className="total-likes">
-						{
-							likeCount === 1
-								? (
-										<div>{`${likeCount} like`}</div>
-									)
-								: (
-										<div>{`${likeCount} likes`}</div>
-									)
-						}
-					</a>
+					
+							{
+								likeCount === 0
+									? (
+											<div className="total-no-likes">
+												Be the first to like this post!
+											</div>
+										)
+									: (
+											<div className="total-likes" onClick={this.handleShowLikes}>
+												{
+													likeCount === 1
+														? (
+																<div>{`${likeCount} like`}</div>
+															)
+														: (
+																<div>{`${likeCount} likes`}</div>
+															)
+
+												}
+											</div>
+										)
+							}
+					</Row>
+
+					<Modal className="like-list" show={this.state.showLikeList} onHide={this.handleCloseLikes} scrollable>
+						<LikeList postId={post.id} />
+					</Modal>
 
 					{
 						post.caption
@@ -214,6 +241,8 @@ class Post extends Component {
 								)
 							: <div className="caption-content"></div>
 					}
+
+					<hr/>
 
 					{/*Need to implement view all comments link*/}
 					<div className="total-comments">
@@ -248,6 +277,7 @@ class Post extends Component {
 
 								</InputGroup>
 							</Form.Group>
+
 						</Form>
 					</div>
 

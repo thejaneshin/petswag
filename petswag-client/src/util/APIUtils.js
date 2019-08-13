@@ -1,4 +1,4 @@
-import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE, COMMENT_LIST_SIZE } from '../constants';
+import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE, LIKE_LIST_SIZE, COMMENT_LIST_SIZE } from '../constants';
 
 const request = (options) => {
 	const headers = new Headers({
@@ -63,6 +63,13 @@ export function getFollowingPosts(page, size) {
 	});
 }
 
+export function getPost(postId) {
+	return request({
+		url: API_BASE_URL + "/posts/" + postId,
+		method: 'GET'
+	})
+}
+
 export function isLikedByMe(postId) {
 	return request({
 		url: API_BASE_URL + "/posts/" + postId + "/liked",
@@ -74,6 +81,16 @@ export function changeLike(postId) {
 	return request({
 		url: API_BASE_URL + "/posts/" + postId + "/likes",
 		method: 'POST'
+	});
+}
+
+export function getPostLikes(postId, page, size) {
+	page = page || 0;
+	size = size || LIKE_LIST_SIZE;
+
+	return request({
+		url: API_BASE_URL + "/posts/" + postId + "/likes?page=" + page + "&size=" + size,
+		method: 'GET'
 	});
 }
 
