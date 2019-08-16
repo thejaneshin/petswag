@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Button, Spinner } from 'react-bootstrap';
-import { withRouter } from 'react-router-dom';
+import { Container, Button } from 'react-bootstrap';
 
 import Post from './Post';
 import { getFollowingPosts } from '../util/APIUtils';
@@ -17,8 +16,7 @@ class PostList extends Component {
 			totalElements: 0,
 			totalPages: 0, 
 			last: true,
-			commentLists: {},
-			isLoading: false
+			isLoading: true
 		}
 	}
 
@@ -35,7 +33,7 @@ class PostList extends Component {
 				totalElements: 0,
 				totalPages: 0, 
 				last: true,
-				isLoading: false
+				isLoading: true
 			});
 			this.loadPostList();
 
@@ -43,11 +41,18 @@ class PostList extends Component {
 	}
 
 	loadPostList = (page = 0, size = POST_LIST_SIZE) => {
-		let promise = getFollowingPosts(page, size);
+		let promise;
 
-		this.setState({
-			isLoading: true
-		})
+		// if (this.props.username)
+
+		// else
+		promise = getFollowingPosts(page, size);
+
+		if (!promise) {
+			return;
+		}
+
+		this.setState({isLoading: true});
 
 		promise
 			.then(response => {
@@ -59,14 +64,15 @@ class PostList extends Component {
 					size: response.size,
 					totalElements: response.totalElements,
 					totalPages: response.totalPages,
-					last: response.last,
-					isLoading: false
-				})
+					last: response.last
+				}, () => {
+					this.setState({isLoading: false});
+				});
 			})
 			.catch(error => {
-				console.log(error.message);
 				this.setState({isLoading: false});
-			});
+				console.log(error.message);
+			})
 	}
 
 	handleLoadMore = () => {
@@ -90,6 +96,7 @@ class PostList extends Component {
 		return(
 			<Container>
 				{postViews}
+				
 				{
 					!isLoading && posts.length === 0
 						? (
@@ -120,4 +127,4 @@ class PostList extends Component {
 	}
 }
 
-export default withRouter(PostList);
+export default PostList;

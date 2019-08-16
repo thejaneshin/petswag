@@ -88,7 +88,8 @@ public class PostServiceImpl implements PostService {
 		
 		Pageable pageable = PageRequest.of(page, size);
 		
-		List<User> following = userRepository.getUserFollowing(username);	
+		List<User> following = userRepository.getUserFollowing(username);
+		following.add(user);
 		List<Post> followingPosts = new LinkedList<>();
 		
 		for (User u : following) {

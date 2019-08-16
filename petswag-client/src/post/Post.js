@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Card, Row, Form, InputGroup, Button, Modal } from 'react-bootstrap';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
@@ -23,7 +23,8 @@ class Post extends Component {
 			isLiked: false,
 			likeCount: this.props.post.likeCount,
 			comment: '',
-			showLikeList: false
+			showLikeList: false,
+			isLoading: true
 		}
 	}
 
@@ -33,6 +34,8 @@ class Post extends Component {
 	}
 
 	loadCommentList = (page = 0, size = COMMENT_LIST_SIZE) => {
+		this.setState({isLoading: true})
+
 		getPostComments(this.props.post.id, page, size)
 			.then(response => {
 				const currentComments = this.state.currentComments.slice();
@@ -44,6 +47,8 @@ class Post extends Component {
 					totalElements: response.totalElements,
 					totalPages: response.totalPages,
 					last: response.last
+				}, () => {
+					this.setState({isLoading: false})
 				});
 			})
 			.catch(error => {
@@ -136,7 +141,7 @@ class Post extends Component {
 	render() {
 		const commentViews = [];
 		const { post } = this.props;
-		const { currentComments, isLiked, likeCount, comment } = this.state;
+		const { currentComments, isLoading, isLiked, likeCount, comment } = this.state;
 
 		currentComments.forEach((comment, commentIndex) => {
 			commentViews.push(
@@ -154,6 +159,10 @@ class Post extends Component {
 				</div>
 			)
 		});
+
+		if (isLoading) {
+			return null;
+		}
 
 		return(
 			<Card className="post-content">
@@ -289,4 +298,4 @@ class Post extends Component {
 	}
 }
 
-export default withRouter(Post);
+export default Post;

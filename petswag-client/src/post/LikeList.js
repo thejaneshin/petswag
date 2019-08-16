@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Row, Modal, Button } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 
 import { getPostLikes } from '../util/APIUtils';
 import { POST_LIST_SIZE } from '../constants';
@@ -16,7 +16,7 @@ class LikeList extends Component {
 			totalElements: 0,
 			totalPages: 0, 
 			last: true,
-			isLoading: false
+			isLoading: true
 		}
 	}
 
@@ -38,7 +38,8 @@ class LikeList extends Component {
 					totalElements: response.totalElements,
 					totalPages: response.totalPages,
 					last: response.last,
-					isLoading: false
+				}, () => {
+					this.setState({isLoading: false});	
 				});
 			})
 			.catch(error => {

@@ -13,17 +13,14 @@ const request = (options) => {
 	options = Object.assign({}, defaults, options);
 
 	return fetch(options.url, options)
-   	.then(response => 
-    	response.json().then(json => {
-      	if (!response.ok) {
-        	return Promise.reject(json);
-        }
-        return json;
-    	})
-    )
-    .catch(error => {
-    	console.log("Something went wrong");
-    });
+		.then(response => 
+			response.json().then(json => {
+				if (!response.ok) {
+					return Promise.reject(json);
+				}
+				return json;
+			})
+		);
 };
 
 export function signup(signupRequest) {

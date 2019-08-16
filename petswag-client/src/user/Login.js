@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Container, Card, Form, InputGroup, Button, Alert, Col } from 'react-bootstrap';
 import { FaUser, FaKey } from 'react-icons/fa';
 
-import { login } from '../../util/APIUtils';
-import { ACCESS_TOKEN } from '../../constants';
+import { login } from '../util/APIUtils';
+import { ACCESS_TOKEN } from '../constants';
 import './Login.css'
 
 class Login extends Component {
@@ -74,8 +74,9 @@ class Login extends Component {
 								{
 									this.state.isValid === false
 										? <Alert variant="danger">{this.state.errorMessage}</Alert>
-										: (<div></div>) 
+										: null
 								}
+
 								<Form.Row className="d-flex justify-content-center mb-3">
 									<Form.Group as={Col} md="12">
 										<InputGroup>

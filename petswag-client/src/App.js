@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
 
 import { getCurrentUser } from './util/APIUtils';
 import { ACCESS_TOKEN } from './constants';
+import LoadingIndicator from './common/LoadingIndicator';
 import AppHeader from './common/AppHeader';
-import Login from './user/Login/Login';
+import Login from './user/Login';
 import PostList from './post/PostList';
+import DetailedPost from './post/DetailedPost'
 import NotFound from './common/NotFound';
 import './App.css';
 
@@ -15,12 +18,16 @@ class App extends Component {
     this.state = {
       currentUser: null,
       isAuthenticated: false,
-      isLoading: false
+      isLoading: true
     }
   }
 
+  componentDidMount() {
+    this.loadCurrentUser();
+  }
+
   loadCurrentUser = () => {
-    this.setState({ isLoading: true });
+    this.setState({isLoading: true});
 
     getCurrentUser()
       .then(response => {
@@ -31,15 +38,8 @@ class App extends Component {
         });
       })
       .catch(error => {
-        this.setState({
-          isLoading: false
-        })
+        this.setState({isLoading: false});
       })
-
-  }
-
-  componentWillMount() {
-    this.loadCurrentUser();
   }
 
   handleLogin = () => {
@@ -47,7 +47,7 @@ class App extends Component {
     this.props.history.push("/");
   }
 
-  handleLogout = (redirectTo="/") => {
+  handleLogout = (redirectTo="/login") => {
     localStorage.removeItem(ACCESS_TOKEN);
     
     this.setState({
@@ -62,45 +62,46 @@ class App extends Component {
     const { currentUser, isAuthenticated, isLoading } = this.state;
 
     return(
-      <div>
+      <div className="app">
         {
           isLoading
-            ? (
-                null
-              )
+            ? <LoadingIndicator />
             :
               (
                 <div>
-                  <AppHeader isAuthenticated={isAuthenticated} 
+                  <AppHeader isAuthenticated={isAuthenticated}
+                    currentUser={currentUser}
                     onLogout={this.handleLogout} />
-                  <Switch>
-                    <Route exact path="/"
-                      render={(props) =>  (
-                        isAuthenticated
-                          ? (
-                              <PostList isAuthenticated={isAuthenticated} 
-                                currentUser={currentUser} handleLogout={this.handleLogout} {...props} />
-                            )
-                          : (
-                              <Redirect to="/login" />
-                            )
-                      )}>
-                    </Route>
-                     
-                    <Route path="/login"
-                      render={(props) => (
-                        isAuthenticated 
-                          ? (
-                              <Redirect to="/" />
-                            )
-                          : (
-                              <Login onLogin={this.handleLogin} {...props} />
-                            )
-                      )}>     
-                    </Route>
 
-                    <Route component={NotFound}></Route>
-                  </Switch> 
+                  <Container>
+                    <Switch>
+                      <Route exact path="/"
+                        render={(props) => (
+                          isAuthenticated
+                            ? (
+                                <PostList isAuthenticated={isAuthenticated} 
+                                  currentUser={currentUser} handleLogout={this.handleLogout} {...props} />
+                              )
+                            : (
+                                <Redirect to="/login" />
+                              )
+                        )}>
+                      </Route>
+                       
+                      <Route path="/login" 
+                        render={(props) => <Login onLogin={this.handleLogin} {...props} />}>
+                      </Route>
+
+                      <Route path="/posts/:postId"
+                        render={(props) => 
+                          <DetailedPost isAuthenticated={isAuthenticated}
+                            handleLogout={this.handleLogout} {...props} />
+                        }>
+                      </Route>
+
+                      <Route component={NotFound}></Route>
+                    </Switch>
+                  </Container>
                 </div>
               )
 
