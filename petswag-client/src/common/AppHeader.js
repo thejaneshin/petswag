@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { FaUser, FaBolt, FaPlus } from 'react-icons/fa';
 
+import SearchBar from './SearchBar';
+
 class AppHeader extends Component {
+
 	clickLogout = () => {
 		this.props.onLogout();
 	}
@@ -11,16 +14,18 @@ class AppHeader extends Component {
 		const { currentUser } = this.props;
 
 		return(
-			<Navbar bg="dark" variant="dark">
+			<Navbar bg="dark" variant="dark" sticky="top" expand="lg">
 				<Navbar.Brand href="/">PetSwag</Navbar.Brand>
 
-				<Navbar.Toggle aria-controls="responsive-navbar-nav" />
-  			<Navbar.Collapse id="responsive-navbar-nav" className="justify-content-end">
+				<Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+  			<Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
   			{
   				currentUser
   					? (
   							<Nav>
-									<Nav.Link href="/profile">
+  								<SearchBar />
+									<Nav.Link href={`/users/${currentUser.username}`}>
 										<FaUser />
 									</Nav.Link>
 

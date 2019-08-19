@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Card, Row, Form, InputGroup, Button, Modal } from 'react-bootstrap';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
@@ -34,7 +34,7 @@ class Post extends Component {
 	}
 
 	loadCommentList = (page = 0, size = COMMENT_LIST_SIZE) => {
-		this.setState({isLoading: true})
+		this.setState({isLoading: true});
 
 		getPostComments(this.props.post.id, page, size)
 			.then(response => {
@@ -140,8 +140,8 @@ class Post extends Component {
 
 	render() {
 		const commentViews = [];
-		const { post } = this.props;
-		const { currentComments, isLoading, isLiked, likeCount, comment } = this.state;
+		const { post, currentUser } = this.props;
+		const { currentComments, isLoading, isLiked, likeCount, comment, last, totalPages, showLikeList } = this.state;
 
 		currentComments.forEach((comment, commentIndex) => {
 			commentViews.push(
@@ -167,6 +167,7 @@ class Post extends Component {
 		return(
 			<Card className="post-content">
 
+				{/*Card header shows post's username, avatar, and time of post creation*/}
 				<Card.Header className="post-header">
 					<Row className="post-creator-info align-items-center">
 						<Link className="creator-link" to={`/users/${post.createdBy.username}`}>
@@ -194,6 +195,7 @@ class Post extends Component {
 
 				<Card.Footer>
 					<Row className="like-info">
+						{/*Like button*/}
 						<IconContext.Provider value={{ color: "red", size: "2em" }}>
 							<div className="like-btn" onClick={this.handleLikeChange}>
 								{
@@ -204,35 +206,36 @@ class Post extends Component {
 							</div>
 						</IconContext.Provider>
 
-					
-							{
-								likeCount === 0
-									? (
-											<div className="total-no-likes">
-												Be the first to like this post!
-											</div>
-										)
-									: (
-											<div className="total-likes" onClick={this.handleShowLikes}>
-												{
-													likeCount === 1
-														? (
-																<div>{`${likeCount} like`}</div>
-															)
-														: (
-																<div>{`${likeCount} likes`}</div>
-															)
+						{/*Like count with link to modal of likers' info*/}
+						{
+							likeCount === 0
+								? (
+										<div className="total-no-likes">
+											Be the first to like this post!
+										</div>
+									)
+								: (
+										<div className="total-likes" onClick={this.handleShowLikes}>
+											{
+												likeCount === 1
+													? (
+															<div>{`${likeCount} like`}</div>
+														)
+													: (
+															<div>{`${likeCount} likes`}</div>
+														)
 
-												}
-											</div>
-										)
-							}
+											}
+										</div>
+									)
+						}
 					</Row>
 
-					<Modal className="like-list" show={this.state.showLikeList} onHide={this.handleCloseLikes} scrollable>
-						<LikeList postId={post.id} />
+					<Modal className="like-list" show={showLikeList} onHide={this.handleCloseLikes} scrollable>
+						<LikeList postId={post.id} currentUser={currentUser} />
 					</Modal>
 
+					{/*Post caption*/}
 					{
 						post.caption
 							? (
@@ -253,20 +256,55 @@ class Post extends Component {
 
 					<hr/>
 
-					{/*Need to implement view all comments link*/}
-					<div className="total-comments">
-						{
-							post.commentCount <= COMMENT_LIST_SIZE
-								? null
-								: (
-										<Link to={`/posts/${post.id}`}>
-											<span>{`View all ${post.commentCount} comments`}</span>
-										</Link>
-									)
-						}
-					</div>
+					{
+						this.props.type === 'DETAILED_POST'
+							? (
+									<div className="detailed-comments">
+									{
+										totalPages <= 1
+											? (
+													<div className="detailed-comments-one-page">
+														{commentViews}
+													</div>
+												)
+											: (
+													<div className="detailed-comments-load">
+														{commentViews}
 
-					{commentViews}
+														{
+															!isLoading && !last
+																? (
+																		<div className="load-more-comments">
+																			<Button variant="outline-primary" onClick={this.handleLoadMore} disabled={isLoading}>
+																				Load More 
+																			</Button>
+																		</div>
+																	)
+																: null
+														}
+													</div>
+												)
+									}
+									</div>
+								)
+							: (
+									<div className="postlist-comments">
+										<div className="total-comments">
+											{
+												post.commentCount <= COMMENT_LIST_SIZE
+													? null
+													: (
+															<Link to={`/posts/${post.id}`}>
+																<span>{`View all ${post.commentCount} comments`}</span>
+															</Link>
+														)
+											}
+										</div>
+										{commentViews}
+									</div>
+								)
+					}
+					
 
 					<div className="comment-form">
 						<Form onSubmit={this.handleCommentSubmit} autoComplete="off">
@@ -281,7 +319,11 @@ class Post extends Component {
 									required />
 
 									<InputGroup.Append>
-										<Button type="submit" className="comment-btn" size="sm">Submit</Button>
+										{
+											comment.length === 0
+												? <Button type="submit" variant="secondary" className="comment-btn" size="sm" disabled>Submit</Button>
+												: <Button type="submit" className="comment-btn" size="sm">Submit</Button>
+										}
 									</InputGroup.Append>
 
 								</InputGroup>
@@ -298,4 +340,4 @@ class Post extends Component {
 	}
 }
 
-export default Post;
+export default withRouter(Post);

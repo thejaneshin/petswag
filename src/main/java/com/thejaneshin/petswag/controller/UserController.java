@@ -1,5 +1,7 @@
 package com.thejaneshin.petswag.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,12 @@ public class UserController {
 		UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), 
 				userService.findByUsername(currentUser.getUsername()).getAvatar());
         return userSummary;
+	}
+	
+	@GetMapping("/user/me/following")
+	@PreAuthorize("hasRole('USER')")
+	public List<String> getMyFollowingNames(@CurrentUser UserPrincipal currentUser) {
+		return userService.getUserFollowingNames(currentUser.getUsername());
 	}
 	
 	@PutMapping("/user/me/editProfile")

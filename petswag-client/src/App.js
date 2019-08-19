@@ -8,7 +8,8 @@ import LoadingIndicator from './common/LoadingIndicator';
 import AppHeader from './common/AppHeader';
 import Login from './user/Login';
 import PostList from './post/PostList';
-import DetailedPost from './post/DetailedPost'
+import DetailedPost from './post/DetailedPost';
+import Profile from './user/Profile';
 import NotFound from './common/NotFound';
 import './App.css';
 
@@ -89,13 +90,28 @@ class App extends Component {
                       </Route>
                        
                       <Route path="/login" 
-                        render={(props) => <Login onLogin={this.handleLogin} {...props} />}>
+                        render={(props) => (
+                          isAuthenticated
+                            ? (
+                                <Redirect to="/" />
+                              )
+                            : (
+                                <Login onLogin={this.handleLogin} {...props} />
+                              )
+                        )}>
                       </Route>
 
                       <Route path="/posts/:postId"
                         render={(props) => 
                           <DetailedPost isAuthenticated={isAuthenticated}
-                            handleLogout={this.handleLogout} {...props} />
+                            currentUser={this.state.currentUser} handleLogout={this.handleLogout} {...props} />
+                        }>
+                      </Route>
+
+                      <Route path="/users/:username"
+                        render={(props) =>
+                          <Profile isAuthenticated={this.state.isAuthenticated} 
+                            currentUser={this.state.currentUser} handleLogout={this.handleLogout} {...props} />
                         }>
                       </Route>
 

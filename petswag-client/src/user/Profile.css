@@ -1,0 +1,47 @@
+.user-avatar {
+	width: 150px;
+	height: 150px;
+	border-radius: 20%;
+	border: 1px solid #eeeeee;
+}
+
+.user-username {
+	font-size: 30px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.edit-profile-btn {
+	margin-left: 40px;
+}
+
+.user-unfollow-btn {
+	margin-left: 40px;
+}
+
+.user-follow-btn {
+	margin-left: 40px;
+}
+
+.user-number-stats {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.user-follower-zero-count {
+	margin-left: 40px;
+}
+
+.user-follower-count {
+	margin-left: 40px;
+	cursor: pointer;
+}
+
+.user-following-zero-count {
+	margin-left: 40px;
+}
+
+.user-following-count {
+	margin-left: 40px;
+	cursor: pointer;
+}

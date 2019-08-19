@@ -1,4 +1,4 @@
-import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE, LIKE_LIST_SIZE, COMMENT_LIST_SIZE } from '../constants';
+import { API_BASE_URL, ACCESS_TOKEN, POST_LIST_SIZE, LIKE_LIST_SIZE, COMMENT_LIST_SIZE, FOLLOW_LIST_SIZE } from '../constants';
 
 const request = (options) => {
 	const headers = new Headers({
@@ -50,6 +50,49 @@ export function getCurrentUser() {
 	});
 }
 
+export function getUserProfile(username) {
+	return request({
+		url: API_BASE_URL + "/users/" + username,
+		method: 'GET'
+	});
+}
+
+export function getUserPosts(username, page, size) {
+	page = page || 0;
+	size = size || POST_LIST_SIZE;
+	return request({
+		url: API_BASE_URL + "/users/" + username + "/posts?page=" + page + "&size=" + size,
+		method: 'GET'
+	});
+}
+
+export function getMyFollowingUsernames() {
+	return request({
+		url: API_BASE_URL + "/user/me/following",
+		method: 'GET'
+	});
+}
+
+export function getUserFollowers(username, page, size) {
+	page = page || 0;
+	size = size || FOLLOW_LIST_SIZE;
+
+	return request({
+		url: API_BASE_URL + "/users/" + username + "/followers?page=" + page + "&size=" + size,
+		method: 'GET'
+	});
+}
+
+export function getUserFollowing(username, page, size) {
+	page = page || 0;
+	size = size || FOLLOW_LIST_SIZE;
+
+	return request({
+		url: API_BASE_URL + "/users/" + username + "/following?page=" + page + "&size=" + size,
+		method: 'GET'
+	});
+}
+
 export function getFollowingPosts(page, size) {
 	page = page || 0;
 	size = size || POST_LIST_SIZE;
@@ -64,7 +107,7 @@ export function getPost(postId) {
 	return request({
 		url: API_BASE_URL + "/posts/" + postId,
 		method: 'GET'
-	})
+	});
 }
 
 export function isLikedByMe(postId) {

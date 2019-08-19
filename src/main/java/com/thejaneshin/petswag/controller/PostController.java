@@ -95,6 +95,7 @@ public class PostController {
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> updatePost(@CurrentUser UserPrincipal currentUser, 
 			@Valid @RequestBody EditCaptionRequest editCaptionRequest, @PathVariable int postId) {
+			
 		User user = userService.findByUsername(currentUser.getUsername());
 		Post post = postService.findById(postId);
 		

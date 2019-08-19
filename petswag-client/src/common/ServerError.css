@@ -1,0 +1,20 @@
+.server-error-page {
+    margin-top: 50px;
+    padding: 40px;
+    text-align: center;   
+}
+
+.server-error-page .server-error-title {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.server-error-page .server-error-desc {
+    margin-top: 50px;
+    font-size: 20px;
+    margin-bottom: 50px;
+}
+
+.server-error-go-back-btn {
+    min-width: 130px;
+}

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Container, Button } from 'react-bootstrap';
 
 import Post from './Post';
-import { getFollowingPosts } from '../util/APIUtils';
+import { getUserPosts, getFollowingPosts } from '../util/APIUtils';
 import { POST_LIST_SIZE } from '../constants';
 import './PostList.css';
 
@@ -24,8 +24,8 @@ class PostList extends Component {
 		this.loadPostList();
 	}
 
-	componentDidUpdate(nextProps) {
-		if (this.props.isAuthenticated !== nextProps.isAuthenticated) {
+	componentDidUpdate(prevProps) {
+		if (this.props.isAuthenticated !== prevProps.isAuthenticated) {
 			this.setState({
 				posts: [],
 				page: 0,
@@ -35,18 +35,21 @@ class PostList extends Component {
 				last: true,
 				isLoading: true
 			});
-			this.loadPostList();
 
+			this.loadPostList();
 		}
 	}
 
 	loadPostList = (page = 0, size = POST_LIST_SIZE) => {
 		let promise;
 
-		// if (this.props.username)
-
-		// else
-		promise = getFollowingPosts(page, size);
+		if (this.props.username) {
+			promise = getUserPosts(this.props.username, page, size)
+		}
+		else {
+			promise = getFollowingPosts(page, size);
+		}
+		
 
 		if (!promise) {
 			return;
@@ -88,7 +91,8 @@ class PostList extends Component {
 				<Post 
 					key={post.id}
 					post={post}
-					isAuthenticated={this.props.isAuthenticated} 
+					isAuthenticated={this.props.isAuthenticated}
+					currentUser={this.props.currentUser}
 				/>
 			)
 		});

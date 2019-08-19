@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 import { getPost } from '../util/APIUtils';
+import LoadingIndicator from '../common/LoadingIndicator';
+import NotFound from '../common/NotFound';
+import ServerError from '../common/ServerError';
 import Post from './Post';
 
 class DetailedPost extends Component {
@@ -18,51 +21,62 @@ class DetailedPost extends Component {
 		this.loadPost(postId);
 	}
 
-	componentDidUpdate(nextProps) {
-		if (this.props.match.params.postId !== nextProps.match.params.postId) {
-			this.loadPost(nextProps.match.params.postId);
+	componentDidUpdate(prevProps) {
+		if (this.props.match.params.postId !== prevProps.match.params.postId) {
+			this.loadPost(this.props.match.params.postId);
 		}
 	}
 
 	loadPost(postId) {
 		this.setState({isLoading: true});
    	
-   	getPost(postId)
-      .then(response => {
-        this.setState({
-        	post: response,
-        	isLoading: false
-        })
-      })
-      .catch(error => {
-        if (error.status === 404) {
-        	this.setState({
-        		notFound: true,
-        		isLoading: false
-        	})
-        }
-        else {
-        	this.setState({
-        		serverError: true,
-        		isLoading: false
-        	})
-        }
-      });
-  }
+	   	getPost(postId)
+	      .then(response => {
+	        this.setState({
+	        	post: response,
+	        	isLoading: false
+	        })
+	      })
+	      .catch(error => {
+	        if (error.status === 404 || error.status === 400) {
+	        	this.setState({
+	        		notFound: true,
+	        		isLoading: false
+	        	})
+	        }
+	        else {
+	        	this.setState({
+	        		serverError: true,
+	        		isLoading: false
+	        	})
+	        }
+	      });
+  	}
 
 	render() {
-		if (this.state.isLoading) {
-			return <Spinner animation="border" variant="primary" />
+		const { isLoading, notFound, serverError, post } = this.state;
+
+		if (isLoading) {
+			return <LoadingIndicator />
 		}
+
+		if (notFound) {
+			return <NotFound />
+		}
+
+		if (serverError) {
+			return <ServerError />
+		}
+
 		return(
 			<Container>
 				{
 					this.state.post
 						? (
-								<Post post={this.state.post} type="DETAILED_POST" />
+								<Post post={post} type="DETAILED_POST" 
+									currentUser={this.props.currentUser} isAuthenticated={this.props.isAuthenticated}/>
 							)
 						: null
-
 				}
 			</Container>
 		);

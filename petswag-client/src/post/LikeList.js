@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 
-import { getPostLikes } from '../util/APIUtils';
+import { getPostLikes, getMyFollowingUsernames } from '../util/APIUtils';
 import { POST_LIST_SIZE } from '../constants';
 import './LikeList.css';
 
@@ -11,6 +11,7 @@ class LikeList extends Component {
 		super(props);
 		this.state = {
 			likes: [],
+			myFollowing: [],
 			page: 0,
 			size: 10,
 			totalElements: 0,
@@ -22,6 +23,7 @@ class LikeList extends Component {
 
 	componentDidMount() {
 		this.loadLikeList();
+		this.loadMyFollowing();
 	}
 
 	loadLikeList = (page = 0, size = POST_LIST_SIZE) => {
@@ -52,9 +54,19 @@ class LikeList extends Component {
 		this.loadLikeList(this.state.page + 1);
 	}
 
+	loadMyFollowing = () => {
+		getMyFollowingUsernames()
+			.then(response => {
+				this.setState({myFollowing: response});
+			})
+			.catch(error => {
+				console.log(error.message);
+			})
+	}
+
 	render() {
 		const likeViews = [];
-		const { likes, last, isLoading } = this.state;
+		const { likes, myFollowing, last, isLoading } = this.state;
 
 		likes.forEach((like, likeIndex) => {
 			likeViews.push(
@@ -71,8 +83,15 @@ class LikeList extends Component {
 						</span>
 					</Link>
 
-					<Button className="ml-auto" size="sm">Follow</Button>
-
+					{
+						like.likedBy.username === this.props.currentUser.username
+							? null
+							: (
+									myFollowing.includes(like.likedBy.username)
+										? null
+										: <Button className="follow-btn ml-auto" size="sm">Follow</Button>
+								)
+					}
 				</div>
 			)
 		});
@@ -89,7 +108,7 @@ class LikeList extends Component {
 					{
 						!isLoading && !last
 							? (
-									<div className="load-more-posts-btn">
+									<div className="load-more-likes-btn">
 										<Button variant="outline-primary" onClick={this.handleLoadMore}>
 											Load More 
 										</Button>
@@ -99,7 +118,6 @@ class LikeList extends Component {
 
 					}
 				</Modal.Body>
-
 			</div>
 		);
 	}

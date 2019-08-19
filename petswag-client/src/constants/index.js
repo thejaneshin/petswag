@@ -4,3 +4,4 @@ export const ACCESS_TOKEN = 'accessToken';
 export const POST_LIST_SIZE = 5;
 export const COMMENT_LIST_SIZE = 5;
 export const LIKE_LIST_SIZE = 10;
+export const FOLLOW_LIST_SIZE = 10;

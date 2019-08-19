@@ -1,11 +1,11 @@
 package com.thejaneshin.petswag.service;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,6 +41,24 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findById(userId);
 	}
 
+	@Override
+	public List<String> getUserFollowingNames(String username) {
+		User user = userRepository.findByUsername(username);
+		
+		if (user == null)
+			throw new ResourceNotFoundException("User", "username", username);
+		
+		List<User> following = userRepository.getUserFollowing(username);
+		
+		List<String> followingNames = new LinkedList<>();
+		
+		for (User f : following) {
+			followingNames.add(f.getUsername());
+		}
+		
+		return followingNames;
+	}
+	
 	private void validatePageNumber(int page) {
 		if (page < 0)
 			throw new BadRequestException("Page number cannot be less than zero.");
@@ -56,21 +74,22 @@ public class UserServiceImpl implements UserService {
 			throw new ResourceNotFoundException("User", "username", username);
 		
 		Pageable pageable = PageRequest.of(page, size);
-		Page<User> followers = userRepository.getUserFollowersPage(username, pageable);
+		List<User> followers = userRepository.getUserFollowers(username);
 		
-		if (followers.getNumberOfElements() == 0)
-			return new PagedResponse<>(Collections.emptyList(), followers.getNumber(),
-                    followers.getSize(), followers.getTotalElements(), followers.getTotalPages(), followers.isLast());
+		int start = (int) pageable.getOffset();
+		int end = (start + pageable.getPageSize()) > followers.size() ? followers.size() : (start + pageable.getPageSize());
+		
+		Page<User> followersPage = new PageImpl<User>(followers.subList(start, end), pageable, followers.size());
 		
 		List<UserSummary> followerSummaries = new LinkedList<>(); 
 		
-		for (User f : followers) {
+		for (User f : followersPage) {
 			followerSummaries.add(new UserSummary(f.getId(), f.getUsername(), 
 				f.getAvatar()));
 		}
 		
-		return new PagedResponse<>(followerSummaries, followers.getNumber(), 
-				followers.getSize(), followers.getTotalElements(), followers.getTotalPages(), followers.isLast());
+		return new PagedResponse<>(followerSummaries, followersPage.getNumber(), 
+				followersPage.getSize(), followersPage.getTotalElements(), followersPage.getTotalPages(), followersPage.isLast());
 	}
 	
 	@Override
@@ -83,21 +102,22 @@ public class UserServiceImpl implements UserService {
 			throw new ResourceNotFoundException("User", "username", username);
 		
 		Pageable pageable = PageRequest.of(page, size);
-		Page<User> following = userRepository.getUserFollowingPage(username, pageable);
+		List<User> following = userRepository.getUserFollowing(username);
 		
-		if (following.getNumberOfElements() == 0)
-			return new PagedResponse<>(Collections.emptyList(), following.getNumber(),
-					following.getSize(), following.getTotalElements(), following.getTotalPages(), following.isLast());
+		int start = (int) pageable.getOffset();
+		int end = (start + pageable.getPageSize()) > following.size() ? following.size() : (start + pageable.getPageSize());
+		
+		Page<User> followingPage = new PageImpl<User>(following.subList(start, end), pageable, following.size());
 		
 		List<UserSummary> followingSummaries = new LinkedList<>(); 
 		
-		for (User f : following) {
+		for (User f : followingPage) {
 			followingSummaries.add(new UserSummary(f.getId(), f.getUsername(), 
 				f.getAvatar()));
 		}
 		
-		return new PagedResponse<>(followingSummaries, following.getNumber(), 
-				following.getSize(), following.getTotalElements(), following.getTotalPages(), following.isLast());	
+		return new PagedResponse<>(followingSummaries, followingPage.getNumber(), 
+				followingPage.getSize(), followingPage.getTotalElements(), followingPage.getTotalPages(), followingPage.isLast());	
 	}
 	
 	@Override
